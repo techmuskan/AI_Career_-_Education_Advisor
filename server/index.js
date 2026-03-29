@@ -30,6 +30,10 @@ await connectDB()
         process.exit(1);
     })
 
+
+// Routes
+app.use("/api/v1/auth", authRoute);
+
 app.get("/", (req, res) => {
     res.send({
         message: "Server chal rha hai 🔥"
