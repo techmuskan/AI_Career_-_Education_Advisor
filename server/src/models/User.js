@@ -7,7 +7,9 @@ const riasecSchema = new mongoose.Schema({
     S: { type: Number, default: 0 },
     E: { type: Number, default: 0 },
     C: { type: Number, default: 0 }
-}, { _id: false });
+}, {
+    _id: false
+});
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -23,7 +25,8 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     },
 
     classLevel: {
@@ -32,11 +35,15 @@ const userSchema = new mongoose.Schema({
         required: true
     },
 
-    // 🧠 AI PERSONALIZATION DATA
-    riasecScores: riasecSchema,
+    // AI PERSONALIZATION DATA
+    riasecScores: {
+        type: riasecSchema,
+        default: () => ({})
+    },
 
     topTraits: {
         type: [String], // ["I", "R"]
+        enum: ["R", "I", "A", "S", "E", "C"],
         default: []
     },
 
@@ -59,13 +66,15 @@ const userSchema = new mongoose.Schema({
 
     // Tokens (optional for refresh tokens)
     refreshToken: {
-        type: String
+        type: String,
+        select: false
     }
 }, {
     timestamps: true,
-    createdAt: true,
-    updatedAt: true
 }
 );
+
+// Index (performance) => Ensure email is indexed for faster queries resulting in better performance during login and signup operations.
+userSchema.index({ email: 1 });
 
 export default mongoose.model("User", userSchema);
