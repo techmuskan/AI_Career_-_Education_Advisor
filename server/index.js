@@ -2,8 +2,10 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
-
 import connectDB from "./src/config/db.js";
+
+import authRoutes from "./src/routes/auth.routes.js";
+import careerRoutes from "./src/routes/ai.routes.js";
 
 const PORT = process.env.PORT || 8000;
 
@@ -32,7 +34,8 @@ await connectDB()
 
 
 // Routes
-app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/careerRecommendation", careerRoutes);
 
 app.get("/", (req, res) => {
     res.send({

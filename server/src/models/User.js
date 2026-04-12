@@ -74,7 +74,4 @@ const userSchema = new mongoose.Schema({
 }
 );
 
-// Index (performance) => Ensure email is indexed for faster queries resulting in better performance during login and signup operations.
-userSchema.index({ email: 1 });
-
 export default mongoose.model("User", userSchema);
