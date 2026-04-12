@@ -31,7 +31,6 @@ const userSchema = new mongoose.Schema({
 
     classLevel: {
         type: String,
-        enum: ["10th", "12th", "graduate"],
         required: true
     },
 
