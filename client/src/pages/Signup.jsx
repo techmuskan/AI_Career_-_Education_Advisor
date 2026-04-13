@@ -34,6 +34,8 @@ export default function Signup() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     const validationError = validate();
 
     if (validationError) {
@@ -45,7 +47,12 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      await signup(form);
+      await signup({
+        name: form.name.trim(),
+        classLevel: form.classLevel.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password
+      });
       navigate("/quiz");
     } catch (err) {
       setError(err.message || "Signup failed");
@@ -71,7 +78,10 @@ export default function Signup() {
           <input
             type="text"
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={(e) => {
+              setError("");
+              setForm({ ...form, name: e.target.value });
+            }}
             className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your name"
           />
@@ -83,9 +93,10 @@ export default function Signup() {
           <input
             type="text"
             value={form.classLevel}
-            onChange={(e) =>
-              setForm({ ...form, classLevel: e.target.value })
-            }
+            onChange={(e) => {
+              setError("");
+              setForm({ ...form, classLevel: e.target.value });
+            }}
             className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="12th, BTech 2nd Year"
           />
@@ -97,7 +108,10 @@ export default function Signup() {
           <input
             type="email"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => {
+              setError("");
+              setForm({ ...form, email: e.target.value });
+            }}
             className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your email"
           />
@@ -109,7 +123,10 @@ export default function Signup() {
           <input
             type="password"
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) => {
+              setError("");
+              setForm({ ...form, password: e.target.value });
+            }}
             className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter password"
           />

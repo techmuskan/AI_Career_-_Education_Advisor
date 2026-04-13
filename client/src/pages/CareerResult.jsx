@@ -20,7 +20,9 @@ export default function CareerResult() {
   console.log("CareerResult received quizResult:", quizResult.quizResult.classLevel, quizResult.quizResult.interests, quizResult.quizResult.scores);
 
   useEffect(() => {
-    if (!quizResult) return;
+    if (!quizResult) {
+      return;
+    }
 
     const fetchSuggestions = async () => {
       setLoading(true);
@@ -44,9 +46,7 @@ export default function CareerResult() {
         <section className="card center">
           <h1>No quiz result found</h1>
           <p className="muted">Complete the quiz to generate your AI-powered career report.</p>
-          <button type="button" className="btn-primary" onClick={() => navigate("/quiz")}>
-            Take Quiz
-          </button>
+          <button type="button" className="btn-primary" onClick={() => navigate("/quiz")}>Take Quiz</button>
         </section>
       </main>
     );
@@ -56,18 +56,14 @@ export default function CareerResult() {
     <main className="page-shell">
       <section className="card">
         <h1>Career Result</h1>
-        <p className="muted">
-          Dominant profile: {quizResult.quizResult.dominantTypes?.join(" - ") || "Not available"}
-        </p>
-        <p className="small muted">
-          Generated on{" "}
-          {quizResult.createdAt
-            ? new Date(quizResult.createdAt).toLocaleString()
-            : "Unknown"}
-        </p>
+        <p className="muted">Dominant profile: {quizResult.dominantTypes.join(" - ")}</p>
+        <p className="small muted">Generated on {new Date(quizResult.createdAt).toLocaleString()}</p>
 
         {loading && <p className="status-info">Generating AI suggestions...</p>}
         {error && <p className="status-error">{error}</p>}
+        {!quizResult && !loading && !error && (
+          <p className="status-info">Showing recommendation data fetched directly from backend profile.</p>
+        )}
         {entry?.isFallback && (
           <p className="status-info">
             AI API is unavailable right now, so we generated a guided fallback recommendation set.
@@ -76,23 +72,21 @@ export default function CareerResult() {
       </section>
 
       <section className="result-grid">
-        <RadarChart scores={quizResult.quizResult.scores} />
+        <RadarChart scores={quizResult.scores} />
 
         <article className="card">
           <h3>Score Breakdown</h3>
           <div className="chip-wrap">
-            {Object.entries(quizResult.quizResult.scores || {}).map(([type, score]) => (
-              <span key={type} className="chip">
-                {type}: {score}
-              </span>
+            {Object.entries(quizResult.scores).map(([type, score]) => (
+              <span key={type} className="chip">{type}: {score}</span>
             ))}
           </div>
 
           <h4>Interests</h4>
-          <p className="muted">{quizResult.quizResult.interests || "Not specified"}</p>
+          <p className="muted">{quizResult.interests || "Not specified"}</p>
 
           <h4>Class/Year</h4>
-          <p className="muted">{quizResult.quizResult.classLevel || "Not specified"}</p>
+          <p className="muted">{quizResult.classLevel || "Not specified"}</p>
 
           <Link className="btn-secondary inline-btn" to="/chat">
             Discuss with AI Chat

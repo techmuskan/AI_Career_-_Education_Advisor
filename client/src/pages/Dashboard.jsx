@@ -10,120 +10,145 @@ export default function Dashboard() {
   const quizHistory = useMemo(() => quizService.getQuizHistory(), []);
   const savedSuggestions = useMemo(() => aiService.getSavedSuggestions(), []);
 
+  const latestQuiz = quizHistory[0] || null;
+  const latestSuggestion = savedSuggestions[0] || null;
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-black via-gray-900 to-gray-800 text-white p-6">
-      {/* Header */}
-      <section className="bg-gray-900 p-6 rounded-2xl shadow mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-gray-400 mt-1">
-          Welcome back, {user?.name || "Learner"}
-        </p>
+    <main className="page-shell dashboard-grid" style={{ gap: "1.5rem" }}>
+      
+      {/* HERO */}
+      <section className="surface dashboard-hero" style={{ padding: "1.8rem" }}>
+        <div className="hero-grid" style={{ alignItems: "center" }}>
+          
+          {/* LEFT */}
+          <div className="hero-panel" style={{ gap: "1.2rem" }}>
+            <span className="eyebrow">Dashboard</span>
 
-        <div className="flex gap-4 mt-4">
-          <Link
-            to="/quiz"
-            className="bg-blue-600 px-5 py-2 rounded-xl hover:bg-blue-700"
-          >
-            Take Quiz
-          </Link>
-          <Link
-            to="/career-result"
-            className="border border-gray-500 px-5 py-2 rounded-xl hover:bg-gray-700"
-          >
-            View Result
-          </Link>
-        </div>
-      </section>
+            <h1 className="hero-title" style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}>
+              Your career journey, organized.
+            </h1>
 
-      {/* Stats */}
-      <section className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gray-900 p-5 rounded-2xl">
-          <h3 className="text-lg font-semibold">Profile</h3>
-          <p className="text-gray-400 mt-2">Name: {user?.name || "N/A"}</p>
-          <p className="text-gray-400">Email: {user?.email || "N/A"}</p>
-        </div>
+            <p className="hero-copy">
+              Track your quiz results, explore AI-generated career paths, and manage your profile - all in one place.
+            </p>
 
-        <div className="bg-gray-900 p-5 rounded-2xl">
-          <h3 className="text-lg font-semibold">Quiz Attempts</h3>
-          <p className="text-gray-400 mt-2">
-            {quizHistory.length} attempts saved
-          </p>
-        </div>
-
-        <div className="bg-gray-900 p-5 rounded-2xl">
-          <h3 className="text-lg font-semibold">Saved Suggestions</h3>
-          <p className="text-gray-400 mt-2">
-            {savedSuggestions.length} sets available
-          </p>
-        </div>
-      </section>
-
-      {/* Quiz History */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Previous Quiz Results</h2>
-
-        {quizHistory.length === 0 ? (
-          <div className="bg-gray-900 p-5 rounded-xl text-gray-400">
-            No quiz history yet.
+            <div className="hero-actions auth-actions">
+              <Link to="/quiz" className="btn-primary">Take quiz</Link>
+              <Link to="/career-result" className="btn-secondary">View report</Link>
+            </div>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {quizHistory.map((item) => (
-              <div key={item.id} className="bg-gray-900 p-5 rounded-xl">
-                <h4 className="font-semibold">
-                  {item.dominantTypes.join(" - ")}
-                </h4>
-                <p className="text-sm text-gray-400">
-                  {new Date(item.createdAt).toLocaleString()}
-                </p>
 
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {Object.entries(item.scores).map(([key, value]) => (
-                    <span
-                      key={`${item.id}-${key}`}
-                      className="bg-gray-800 px-3 py-1 rounded-full text-sm"
-                    >
-                      {key}: {value}
-                    </span>
-                  ))}
-                </div>
+          {/* RIGHT (PROFILE CARD) */}
+          <div className="surface-soft" style={{ padding: "1.4rem" }}>
+            <h3 style={{ marginBottom: "1rem" }}>Profile summary</h3>
+
+            <div className="stack">
+              <div>
+                <p className="small muted">Name</p>
+                <h4>{user?.name || "Learner"}</h4>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
 
-      {/* Saved Suggestions */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Saved Career Suggestions</h2>
-
-        {savedSuggestions.length === 0 ? (
-          <div className="bg-gray-900 p-5 rounded-xl text-gray-400">
-            No suggestions saved yet.
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {savedSuggestions.map((entry) => (
-              <div key={entry.id} className="bg-gray-900 p-5 rounded-xl">
-                <p className="text-sm text-gray-400">
-                  {new Date(entry.createdAt).toLocaleString()}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {(entry.suggestions || []).map((item) => (
-                    <span
-                      key={`${entry.id}-${item.title}`}
-                      className="bg-blue-600 px-3 py-1 rounded-full text-sm"
-                    >
-                      {item.title}
-                    </span>
-                  ))}
-                </div>
+              <div>
+                <p className="small muted">Email</p>
+                <h4>{user?.email || "Not available"}</h4>
               </div>
-            ))}
+
+              <div>
+                <p className="small muted">Class / Year</p>
+                <h4>{user?.classLevel || "Not set"}</h4>
+              </div>
+            </div>
           </div>
-        )}
+
+        </div>
       </section>
-    </div>
+
+      {/* STATS */}
+      <section className="stats-grid" style={{ gap: "1.2rem" }}>
+        
+        <article className="card stat-card" style={{ textAlign: "center" }}>
+          <div className="stat-value">{quizHistory.length}</div>
+          <div className="stat-label">Quiz Attempts</div>
+        </article>
+
+        <article className="card stat-card" style={{ textAlign: "center" }}>
+          <div className="stat-value">{savedSuggestions.length}</div>
+          <div className="stat-label">Saved Reports</div>
+        </article>
+
+        <article className="card stat-card" style={{ textAlign: "center" }}>
+          <div className="stat-value">
+            {user?.classLevel ? "Complete" : "Incomplete"}
+          </div>
+          <div className="stat-label">Profile Status</div>
+        </article>
+
+      </section>
+
+      {/* MAIN CONTENT */}
+      <section className="two-col" style={{ gap: "1.2rem" }}>
+
+        {/* QUIZ CARD */}
+        <section className="card" style={{ padding: "1.4rem" }}>
+          <h2 style={{ marginBottom: "0.8rem" }}>Latest Quiz Result</h2>
+
+          {latestQuiz ? (
+            <div className="stack">
+              <p className="muted">
+                {latestQuiz.dominantTypes?.join(" - ") || "No data"}
+              </p>
+
+              <p className="small muted">
+                {new Date(latestQuiz.createdAt).toLocaleString()}
+              </p>
+
+              <div className="chip-wrap">
+                {Object.entries(latestQuiz.scores || {}).map(([key, value]) => (
+                  <span key={`${latestQuiz.id}-${key}`} className="chip">
+                    {key}: {value}
+                  </span>
+                ))}
+              </div>
+
+              <Link className="btn-secondary inline-btn" to="/career-result">
+                View full report
+              </Link>
+            </div>
+          ) : (
+            <p className="muted">No quiz attempts yet.</p>
+          )}
+        </section>
+
+        {/* SUGGESTION CARD */}
+        <section className="card" style={{ padding: "1.4rem" }}>
+          <h2 style={{ marginBottom: "0.8rem" }}>Latest Career Report</h2>
+
+          {latestSuggestion ? (
+            <div className="stack">
+              <p className="small muted">
+                {new Date(latestSuggestion.createdAt).toLocaleString()}
+              </p>
+
+              <div className="tag-row">
+                {(latestSuggestion.suggestions || []).slice(0, 4).map((item) => (
+                  <span key={item.title} className="tag">
+                    {item.title}
+                  </span>
+                ))}
+              </div>
+
+              <Link className="btn-secondary inline-btn" to="/career-result">
+                Reopen report
+              </Link>
+            </div>
+          ) : (
+            <p className="muted">No reports generated yet.</p>
+          )}
+        </section>
+
+      </section>
+
+
+    </main>
   );
 }

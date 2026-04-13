@@ -6,7 +6,7 @@ export const STORAGE_KEYS = {
   CHAT_HISTORY: "career-chat-history"
 };
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || "";
 
 export const RIASEC_TYPES = ["R", "I", "A", "S", "E", "C"];
 
