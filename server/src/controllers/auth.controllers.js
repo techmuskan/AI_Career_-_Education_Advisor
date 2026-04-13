@@ -24,7 +24,7 @@ const cookieOptions = {
 // Signup User
 // POST: /api/v1/auth/signup
 export const signupUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, classLevel } = req.body;
 
     if (!name || !email || !password) {
         return res.status(400).json({
@@ -64,7 +64,8 @@ export const signupUser = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            classLevel
         });
         if (!user) {
             return res.status(401).json({
