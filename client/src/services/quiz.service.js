@@ -50,13 +50,14 @@ const submitQuiz = async ({ questions, answers, classLevel, interests }) => {
   };
 
   console.log("Submitting quiz result:", quizResult);
-  console.log("Fetching career recommendation with payload:", careerRecommendation(quizResult));
 
+  const recommendation = await careerRecommendation(quizResult);
+  
   const history = getQuizHistory();
   const updatedHistory = [quizResult, ...history].slice(0, 10);
   saveQuizHistory(updatedHistory);
 
-  return { quizResult, careerRecommendation: await careerRecommendation(quizResult) };
+  return { quizResult, careerRecommendation: recommendation };
 };
 
 export const quizService = {

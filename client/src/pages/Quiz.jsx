@@ -37,7 +37,14 @@ export default function Quiz() {
         classLevel,
         interests
       });
-      navigate("/career-result", { state: { quizResult: result } });
+
+      navigate("/result", {
+        state: {
+          quizResult: result.quizResult,
+          careerRecommendation: result.careerRecommendation
+        }
+      });
+      
     } catch (err) {
       setError(err.message || "Failed to submit quiz.");
     } finally {

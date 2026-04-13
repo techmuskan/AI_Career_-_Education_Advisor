@@ -46,23 +46,9 @@ const fallbackSuggestions = (quizResult) => {
 
 const getCareerSuggestions = async (quizResult) => {
   try {
-    const payload = quizResult
-      ? {
-          riasecScores: quizResult.scores,
-          topTraits: quizResult.dominantTypes,
-          classLevel: quizResult.classLevel,
-          interests: quizResult.interests
-        }
-      : {};
-
     const response = await apiRequest("/api/v1/careerRecommendation/recommendation", {
       method: "POST",
-      body: JSON.stringify({
-        riasecScores: quizResult.scores,
-        topTraits: quizResult.dominantTypes,
-        classLevel: quizResult.classLevel,
-        interests: quizResult.interests
-      })
+      body: JSON.stringify({ quizResult })
     });
 
     const entry = {
@@ -73,11 +59,7 @@ const getCareerSuggestions = async (quizResult) => {
     };
     saveSuggestions(entry);
     return entry;
-  } catch {
-    if (!quizResult) {
-      throw new Error("Unable to load AI report from backend");
-    }
-
+  } catch (error) {
     const suggestions = fallbackSuggestions(quizResult);
     const entry = {
       id: crypto.randomUUID(),
@@ -93,6 +75,7 @@ const getCareerSuggestions = async (quizResult) => {
     return entry;
   }
 };
+
 
 const getChatHistory = () => {
   const raw = localStorage.getItem(STORAGE_KEYS.CHAT_HISTORY);
