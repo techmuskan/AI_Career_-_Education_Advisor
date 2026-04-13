@@ -61,5 +61,5 @@ export const authService = {
   logout,
   clearAuth,
   getStoredUser,
-  isAuthenticated
+  isAuthenticated,
 };

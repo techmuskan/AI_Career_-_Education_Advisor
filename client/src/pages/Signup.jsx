@@ -55,7 +55,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-black via-gray-900 to-gray-800 text-white px-4">
       <form
         onSubmit={onSubmit}
         className="bg-gray-900 p-8 rounded-2xl shadow-lg w-full max-w-md"

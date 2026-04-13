@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 :root {
   --bg-0: #05080f;
   --bg-1: #0b1320;
@@ -61,6 +62,18 @@ h3 {
   text-align: center;
   font-size: 0.85rem;
   background: rgba(6, 12, 22, 0.55);
+}
+
+.roadmap-list {
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.roadmap-item {
+  line-height: 1.6;
+  color: var(--text-muted, #555);
 }
 
 .navbar {
@@ -463,6 +476,7 @@ h3 {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -470,6 +484,7 @@ h3 {
 }
 
 @media (max-width: 980px) {
+
   .grid-3,
   .grid-2,
   .result-grid,

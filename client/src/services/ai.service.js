@@ -40,20 +40,14 @@ const getCareerSuggestions = async (quizResult) => {
   try {
     const response = await apiRequest("/api/v1/careerRecommendation/recommendation", {
       method: "POST",
-      body: JSON.stringify({
-        riasecScores: quizResult.scores,
-        topTraits: quizResult.dominantTypes,
-        classLevel: quizResult.classLevel,
-        interests: quizResult.interests
-      })
+      body: JSON.stringify({ quizResult })
     });
 
-    const suggestions = Array.isArray(response.data) ? response.data : [];
     const entry = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       quizId: quizResult.id,
-      suggestions
+      careerRecommendation: response.data
     };
     saveSuggestions(entry);
     return entry;
@@ -63,7 +57,10 @@ const getCareerSuggestions = async (quizResult) => {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       quizId: quizResult.id,
-      suggestions,
+      careerRecommendation: {
+        careers: suggestions,
+        roadmap: suggestions[0]?.roadmap || []
+      },
       isFallback: true
     };
     saveSuggestions(entry);
@@ -82,11 +79,10 @@ const saveChatHistory = (messages) => {
 
 const chatWithAI = async (message) => {
   try {
-    const response = await apiRequest("/api/v1/careerRecommendation/recommendation", {
+    const response = await apiRequest("/api/v1/careerRecommendation/chat", { // ✅ use correct chat endpoint
       method: "POST",
       body: JSON.stringify({ prompt: message })
     });
-
     return response?.data?.summary || "I analyzed your request. Try taking the RIASEC quiz for more accurate guidance.";
   } catch {
     return "I can help you plan your career path. Ask about skills, projects, or roadmap for your target role.";

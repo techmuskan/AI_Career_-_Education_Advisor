@@ -11,7 +11,7 @@ export default function Dashboard() {
   const savedSuggestions = useMemo(() => aiService.getSavedSuggestions(), []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white p-6">
+    <div className="min-h-screen bg-linear-to-br from-black via-gray-900 to-gray-800 text-white p-6">
       {/* Header */}
       <section className="bg-gray-900 p-6 rounded-2xl shadow mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>

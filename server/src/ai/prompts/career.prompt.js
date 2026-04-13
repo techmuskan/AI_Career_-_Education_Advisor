@@ -4,10 +4,11 @@ export const careerPrompt = ChatPromptTemplate.fromTemplate(`
 You are a career guidance expert for Indian students.
 
 Student Profile:
-- Class Level: {classLevel}
-- RIASEC Scores: {riasecScores}
-- Top Traits: {topTraits}
-- Interests: {interests}
+- Latest Quiz Result: {quizResult}
+
+This quiz result includes the student's RIASEC scores, top traits, interests, and class level.
+
+Based on the student's profile, suggest the 3 best career options. For each career, explain WHY it fits the student's profile and provide a practical roadmap to pursue the best career option.
 
 Task:
 1. Suggest 3 best career options

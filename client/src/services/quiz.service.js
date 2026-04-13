@@ -1,4 +1,5 @@
 import { RIASEC_TYPES, STORAGE_KEYS } from "../utils/constants";
+import { apiRequest } from "./api";
 
 const getQuizHistory = () => {
   const raw = localStorage.getItem(STORAGE_KEYS.QUIZ_HISTORY);
@@ -40,11 +41,22 @@ const submitQuiz = async ({ questions, answers, classLevel, interests }) => {
     dominantTypes
   };
 
+  const careerRecommendation = async (quizResult) => {
+    const response = await apiRequest("/api/v1/careerRecommendation/recommendation", {
+      method: "POST",
+      body: JSON.stringify({ quizResult })
+    });
+    return response.data;
+  };
+
+  console.log("Submitting quiz result:", quizResult);
+  console.log("Fetching career recommendation with payload:", careerRecommendation(quizResult));
+
   const history = getQuizHistory();
   const updatedHistory = [quizResult, ...history].slice(0, 10);
   saveQuizHistory(updatedHistory);
 
-  return quizResult;
+  return { quizResult, careerRecommendation: await careerRecommendation(quizResult) };
 };
 
 export const quizService = {

@@ -161,7 +161,7 @@ export const loginUser = async (req, res) => {
 
 
 // Log Out User
-// POST: /api/v1/auth/logout
+// GET: /api/v1/auth/logout
 export const logOutUser = async (req, res) => {
     try {
         res.clearCookie("token", {

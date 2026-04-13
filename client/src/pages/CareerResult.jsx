@@ -13,17 +13,14 @@ export default function CareerResult() {
   const [entry, setEntry] = useState(null);
 
   const quizResult = useMemo(() => {
-    if (location.state?.quizResult) {
-      return location.state.quizResult;
-    }
+    if (location.state?.quizResult) return location.state.quizResult;
     const history = quizService.getQuizHistory();
     return history[0] || null;
   }, [location.state]);
+  console.log("CareerResult received quizResult:", quizResult.quizResult.classLevel, quizResult.quizResult.interests, quizResult.quizResult.scores);
 
   useEffect(() => {
-    if (!quizResult) {
-      return;
-    }
+    if (!quizResult) return;
 
     const fetchSuggestions = async () => {
       setLoading(true);
@@ -47,7 +44,9 @@ export default function CareerResult() {
         <section className="card center">
           <h1>No quiz result found</h1>
           <p className="muted">Complete the quiz to generate your AI-powered career report.</p>
-          <button type="button" className="btn-primary" onClick={() => navigate("/quiz")}>Take Quiz</button>
+          <button type="button" className="btn-primary" onClick={() => navigate("/quiz")}>
+            Take Quiz
+          </button>
         </section>
       </main>
     );
@@ -57,8 +56,15 @@ export default function CareerResult() {
     <main className="page-shell">
       <section className="card">
         <h1>Career Result</h1>
-        <p className="muted">Dominant profile: {quizResult.dominantTypes.join(" - ")}</p>
-        <p className="small muted">Generated on {new Date(quizResult.createdAt).toLocaleString()}</p>
+        <p className="muted">
+          Dominant profile: {quizResult.quizResult.dominantTypes?.join(" - ") || "Not available"}
+        </p>
+        <p className="small muted">
+          Generated on{" "}
+          {quizResult.createdAt
+            ? new Date(quizResult.createdAt).toLocaleString()
+            : "Unknown"}
+        </p>
 
         {loading && <p className="status-info">Generating AI suggestions...</p>}
         {error && <p className="status-error">{error}</p>}
@@ -70,31 +76,52 @@ export default function CareerResult() {
       </section>
 
       <section className="result-grid">
-        <RadarChart scores={quizResult.scores} />
+        <RadarChart scores={quizResult.quizResult.scores} />
 
         <article className="card">
           <h3>Score Breakdown</h3>
           <div className="chip-wrap">
-            {Object.entries(quizResult.scores).map(([type, score]) => (
-              <span key={type} className="chip">{type}: {score}</span>
+            {Object.entries(quizResult.quizResult.scores || {}).map(([type, score]) => (
+              <span key={type} className="chip">
+                {type}: {score}
+              </span>
             ))}
           </div>
 
           <h4>Interests</h4>
-          <p className="muted">{quizResult.interests || "Not specified"}</p>
+          <p className="muted">{quizResult.quizResult.interests || "Not specified"}</p>
 
           <h4>Class/Year</h4>
-          <p className="muted">{quizResult.classLevel || "Not specified"}</p>
+          <p className="muted">{quizResult.quizResult.classLevel || "Not specified"}</p>
 
-          <Link className="btn-secondary inline-btn" to="/chat">Discuss with AI Chat</Link>
+          <Link className="btn-secondary inline-btn" to="/chat">
+            Discuss with AI Chat
+          </Link>
         </article>
       </section>
 
-      <section className="grid-2">
-        {(entry?.suggestions || []).map((career, index) => (
-          <CareerCard key={`${career.title}-${index}`} career={career} index={index} />
-        ))}
-      </section>
+      {/* Career Cards */}
+      {entry?.careerRecommendation?.careers?.length > 0 && (
+        <section className="grid-2">
+          {entry.careerRecommendation.careers.map((career, index) => (
+            <CareerCard key={`${career.title}-${index}`} career={career} index={index} />
+          ))}
+        </section>
+      )}
+
+      {/* Roadmap */}
+      {entry?.careerRecommendation?.roadmap?.length > 0 && (
+        <section className="card">
+          <h3>Your Roadmap</h3>
+          <ol className="roadmap-list">
+            {entry.careerRecommendation.roadmap.map((step, index) => (
+              <li key={index} className="roadmap-item">
+                {step}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </main>
   );
 }

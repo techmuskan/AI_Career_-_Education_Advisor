@@ -11,13 +11,16 @@ const toPoint = (angle, valueRatio) => {
 };
 
 export default function RadarChart({ scores }) {
-  const maxScore = Math.max(...Object.values(scores || {}).map(Number), 1);
+  const safeScores = scores || {};
+  const maxScore = Math.max(...Object.values(safeScores).map(Number), 1);
 
   const points = RIASEC_TYPES.map((type, idx) => {
     const angle = (Math.PI * 2 * idx) / RIASEC_TYPES.length - Math.PI / 2;
-    const ratio = Number(scores[type] || 0) / maxScore;
+    const ratio = Number(safeScores[type] || 0) / maxScore;
     return toPoint(angle, ratio);
   }).join(" ");
+
+  if (!scores) return null;
 
   return (
     <div className="card chart-card">
