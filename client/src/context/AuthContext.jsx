@@ -1,6 +1,34 @@
 import { useEffect, useMemo, useState } from "react";
 import { authService } from "../services/auth.service";
+import { STORAGE_KEYS } from "../utils/constants";
 import { AuthContext } from "./auth-context";
+
+const persistUser = (user) => {
+  if (!user) {
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    return;
+  }
+
+  localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+};
+
+const resolveUser = async (responseUser) => {
+  const storedUser = authService.getStoredUser();
+
+  try {
+    const profile = await authService.getProfile();
+    return {
+      ...(storedUser || {}),
+      ...(responseUser || {}),
+      ...profile
+    };
+  } catch {
+    return {
+      ...(storedUser || {}),
+      ...(responseUser || {})
+    };
+  }
+};
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(authService.getStoredUser());
@@ -15,7 +43,10 @@ export function AuthProvider({ children }) {
 
       try {
         const profile = await authService.getProfile();
-        setUser(profile);
+        const storedUser = authService.getStoredUser();
+        const nextUser = storedUser ? { ...storedUser, ...profile } : profile;
+        setUser(nextUser);
+        persistUser(nextUser);
       } catch {
         authService.clearAuth();
         setUser(null);
@@ -29,19 +60,27 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     const response = await authService.login(credentials);
-    setUser(response.user);
+    const nextUser = await resolveUser(response.user);
+    setUser(nextUser);
+    persistUser(nextUser);
     return response;
   };
 
   const signup = async (payload) => {
     const response = await authService.signup(payload);
-    setUser(response.user);
+    const nextUser = await resolveUser({
+      ...response.user,
+      classLevel: payload.classLevel || response.user?.classLevel || ""
+    });
+    setUser(nextUser);
+    persistUser(nextUser);
     return response;
   };
 
   const logout = async () => {
     await authService.logout();
     setUser(null);
+    persistUser(null);
   };
 
   const value = useMemo(() => ({

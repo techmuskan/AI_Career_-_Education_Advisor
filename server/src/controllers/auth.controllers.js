@@ -24,9 +24,12 @@ const cookieOptions = {
 // Signup User
 // POST: /api/v1/auth/signup
 export const signupUser = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, classLevel } = req.body;
+    const normalizedEmail = String(email || "").trim().toLowerCase();
+    const normalizedName = String(name || "").trim();
+    const normalizedClassLevel = String(classLevel || "").trim();
 
-    if (!name || !email || !password) {
+    if (!normalizedName || !normalizedEmail || !password || !normalizedClassLevel) {
         return res.status(400).json({
             success: false,
             message: "Please fill all details!"
@@ -34,7 +37,7 @@ export const signupUser = async (req, res) => {
     }
 
     try {
-        if (!validator.isEmail(email)) {
+        if (!validator.isEmail(normalizedEmail)) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid email format!"
@@ -49,7 +52,7 @@ export const signupUser = async (req, res) => {
         }
 
         // Check if user existing
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email: normalizedEmail });
         if (existingUser) {
             return res.status(400).json({
                 success: false,
@@ -62,9 +65,10 @@ export const signupUser = async (req, res) => {
 
         // create new user
         const user = await User.create({
-            name,
-            email,
-            password: hashedPassword
+            name: normalizedName,
+            email: normalizedEmail,
+            password: hashedPassword,
+            classLevel: normalizedClassLevel
         });
         if (!user) {
             return res.status(401).json({
@@ -83,7 +87,8 @@ export const signupUser = async (req, res) => {
             user: {
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                classLevel: user.classLevel
             },
             message: "User Registered Successfully!"
         })
@@ -105,16 +110,18 @@ export const loginUser = async (req, res) => {
     try {
 
         const { email, password } = req.body;
+        const normalizedEmail = String(email || "").trim().toLowerCase();
+        const normalizedPassword = String(password || "");
 
-        if (!email || !password) {
+        if (!normalizedEmail || !normalizedPassword) {
             return res.status(400).json({
                 success: false,
                 message: "Please fill all details!"
             })
         }
 
-        // Find user by email
-        const user = await User.findOne({ email });
+        // Read from raw collection to guarantee password field availability.
+        const user = await User.collection.findOne({ email: normalizedEmail });
         if (!user) {
             return res.status(400).json({
                 success: false,
@@ -122,7 +129,20 @@ export const loginUser = async (req, res) => {
             })
         }
 
-        const isMatched = await bcrypt.compare(password, user.password);
+        const bcryptHashPattern = /^\$2[aby]\$\d{2}\$.{53}$/;
+        if (typeof user.password !== "string" || !bcryptHashPattern.test(user.password)) {
+            return res.status(500).json({
+                success: false,
+                message: "User credentials are misconfigured. Please sign up again with a new account."
+            })
+        }
+
+        let isMatched = false;
+        try {
+            isMatched = await bcrypt.compare(normalizedPassword, user.password);
+        } catch {
+            isMatched = false;
+        }
 
         if (!isMatched) {
             return res.status(401).json({

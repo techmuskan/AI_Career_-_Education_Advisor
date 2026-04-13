@@ -21,6 +21,8 @@ export default function Login() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     const validationError = validate();
 
     if (validationError) {
@@ -32,7 +34,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(form);
+      await login({
+        email: form.email.trim().toLowerCase(),
+        password: form.password
+      });
       navigate("/dashboard");
     } catch (err) {
       setError(err.message || "Login failed");
@@ -42,7 +47,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-black via-gray-900 to-gray-800 text-white px-4">
       <form
         onSubmit={onSubmit}
         className="bg-gray-900 p-8 rounded-2xl shadow-lg w-full max-w-md"
@@ -58,7 +63,10 @@ export default function Login() {
           <input
             type="email"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => {
+              setError("");
+              setForm({ ...form, email: e.target.value });
+            }}
             className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your email"
           />
@@ -70,7 +78,10 @@ export default function Login() {
           <input
             type="password"
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) => {
+              setError("");
+              setForm({ ...form, password: e.target.value });
+            }}
             className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your password"
           />

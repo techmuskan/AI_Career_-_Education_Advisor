@@ -2,10 +2,11 @@ import { useState } from "react";
 
 export default function ChatBox({ messages, onSend, loading }) {
   const [input, setInput] = useState("");
+  const canSubmit = input.trim().length > 0 && !loading;
 
   const submit = async (event) => {
     event.preventDefault();
-    if (!input.trim()) {
+    if (!canSubmit) {
       return;
     }
     await onSend(input.trim());
@@ -16,7 +17,10 @@ export default function ChatBox({ messages, onSend, loading }) {
     <div className="chat-shell">
       <div className="chat-messages" aria-live="polite">
         {messages.length === 0 && (
-          <p className="muted">Ask about roles, required skills, roadmap, or project ideas.</p>
+          <article className="chat-empty">
+            <h3>No messages yet</h3>
+            <p className="muted">Try asking about role options, required skills, roadmap planning, or project ideas.</p>
+          </article>
         )}
 
         {messages.map((msg) => (
@@ -29,14 +33,16 @@ export default function ChatBox({ messages, onSend, loading }) {
       </div>
 
       <form className="chat-input" onSubmit={submit}>
-        <input
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder="Type your question..."
-          aria-label="Career chat prompt"
-        />
-        <button type="submit" className="btn-primary" disabled={loading}>
-          Send
+        <div className="chat-input-wrap">
+          <input
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            placeholder="Type your question..."
+            aria-label="Career chat prompt"
+          />
+        </div>
+        <button type="submit" className="btn-primary" disabled={!canSubmit}>
+          {loading ? "Sending..." : "Send"}
         </button>
       </form>
     </div>

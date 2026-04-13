@@ -21,10 +21,6 @@ export default function CareerResult() {
   }, [location.state]);
 
   useEffect(() => {
-    if (!quizResult) {
-      return;
-    }
-
     const fetchSuggestions = async () => {
       setLoading(true);
       setError("");
@@ -41,27 +37,24 @@ export default function CareerResult() {
     fetchSuggestions();
   }, [quizResult]);
 
-  if (!quizResult) {
-    return (
-      <main className="page-shell">
-        <section className="card center">
-          <h1>No quiz result found</h1>
-          <p className="muted">Complete the quiz to generate your AI-powered career report.</p>
-          <button type="button" className="btn-primary" onClick={() => navigate("/quiz")}>Take Quiz</button>
-        </section>
-      </main>
-    );
-  }
-
   return (
     <main className="page-shell">
       <section className="card">
         <h1>Career Result</h1>
-        <p className="muted">Dominant profile: {quizResult.dominantTypes.join(" - ")}</p>
-        <p className="small muted">Generated on {new Date(quizResult.createdAt).toLocaleString()}</p>
+        <p className="muted">
+          {quizResult
+            ? `Dominant profile: ${quizResult.dominantTypes.join(" - ")}`
+            : "Backend-generated profile recommendations"}
+        </p>
+        <p className="small muted">
+          Generated on {new Date(quizResult?.createdAt || Date.now()).toLocaleString()}
+        </p>
 
         {loading && <p className="status-info">Generating AI suggestions...</p>}
         {error && <p className="status-error">{error}</p>}
+        {!quizResult && !loading && !error && (
+          <p className="status-info">Showing recommendation data fetched directly from backend profile.</p>
+        )}
         {entry?.isFallback && (
           <p className="status-info">
             AI API is unavailable right now, so we generated a guided fallback recommendation set.
@@ -70,21 +63,35 @@ export default function CareerResult() {
       </section>
 
       <section className="result-grid">
-        <RadarChart scores={quizResult.scores} />
+        {quizResult ? (
+          <RadarChart scores={quizResult.scores} />
+        ) : (
+          <article className="card">
+            <h3>Quiz Snapshot</h3>
+            <p className="muted">No local quiz result available in this browser session.</p>
+            <button type="button" className="btn-primary inline-btn" onClick={() => navigate("/quiz")}>
+              Take Quiz
+            </button>
+          </article>
+        )}
 
         <article className="card">
           <h3>Score Breakdown</h3>
-          <div className="chip-wrap">
-            {Object.entries(quizResult.scores).map(([type, score]) => (
-              <span key={type} className="chip">{type}: {score}</span>
-            ))}
-          </div>
+          {quizResult ? (
+            <div className="chip-wrap">
+              {Object.entries(quizResult.scores).map(([type, score]) => (
+                <span key={type} className="chip">{type}: {score}</span>
+              ))}
+            </div>
+          ) : (
+            <p className="muted">Score breakdown appears here after quiz submission.</p>
+          )}
 
           <h4>Interests</h4>
-          <p className="muted">{quizResult.interests || "Not specified"}</p>
+          <p className="muted">{quizResult?.interests || "Not specified"}</p>
 
           <h4>Class/Year</h4>
-          <p className="muted">{quizResult.classLevel || "Not specified"}</p>
+          <p className="muted">{quizResult?.classLevel || "Not specified"}</p>
 
           <Link className="btn-secondary inline-btn" to="/chat">Discuss with AI Chat</Link>
         </article>

@@ -1,12 +1,14 @@
 import { apiRequest } from "./api";
 import { STORAGE_KEYS } from "../utils/constants";
 
-const persistAuth = ({ token, user }) => {
+const persistAuth = ({ token, user }, fallbackUser = null) => {
+  const nextUser = user || fallbackUser;
+
   if (token) {
     localStorage.setItem(STORAGE_KEYS.TOKEN, token);
   }
-  if (user) {
-    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
+  if (nextUser) {
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(nextUser));
   }
 };
 
@@ -27,7 +29,10 @@ const signup = async (payload) => {
     method: "POST",
     body: JSON.stringify(payload)
   });
-  persistAuth(response);
+  persistAuth(response, {
+    ...response.user,
+    classLevel: payload.classLevel
+  });
   return response;
 };
 
