@@ -108,7 +108,7 @@ a {
 
 .roadmap-item {
   line-height: 1.6;
-  color: var(--text-muted, #555);
+  color: var(--text-muted, #7b7d93);
 }
 
 .navbar {
