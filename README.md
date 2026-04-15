@@ -1,84 +1,104 @@
-# Career Saathi (Minor Project)
+# AI Career Guidance Application
 
-A simple full-stack career guidance app.
+A modern web application that provides AI-powered career guidance and recommendations using the RIASEC (Holland) personality assessment framework. The application helps students identify suitable career paths based on their personality traits, interests, and educational background.
 
-## What it does
+## 🌟 Features
 
-- Student signup and login
-- RIASEC quiz
-- AI-based career recommendations
-- Career chat and saved reports
+- **RIASEC Personality Assessment**: Interactive quiz based on Holland's RIASEC model (Realistic, Investigative, Artistic, Social, Enterprising, Conventional)
+- **AI-Powered Recommendations**: Leverages Google's Gemini AI to generate personalized career suggestions
+- **User Authentication**: Secure signup and login with JWT-based authentication
+- **User Profiles**: Store and manage user data including class level, interests, and RIASEC scores
+- **Real-time Chat**: Interactive chatbox for career-related queries
+- **Career Results Dashboard**: Visual representation of results with radar charts
+- **Saved Suggestions**: Bookmark and save career recommendations for later reference
+- **Multi-page Application**: Comprehensive user journey from landing to detailed career guidance
 
-## Tech stack
+## 🏗️ Architecture
 
-- Frontend: React + Vite
-- Backend: Node.js + Express + MongoDB
-- AI: Google Gemini (via LangChain)
+The application follows a **Full-Stack Architecture** with client-server separation:
 
-## Project structure
-
-- `client/` -> frontend app
-- `server/` -> backend API
-
-## Prerequisites
-
-- Node.js 18+
-- MongoDB connection string
-- Google API key (Gemini)
-
-## Environment variables
-
-Create `server/.env` with:
-
-```env
-PORT=8000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET_KEY=your_jwt_secret
-GOOGLE_API_KEY=your_google_api_key
+```
+┌─────────────────────────────────────────────────────────┐
+│                    CLIENT (React + Vite)                │
+│  - UI/UX Components                                     │
+│  - State Management (Context API)                       │
+│  - API Communication Layer                              │
+│  - Authentication Handling                              │
+└────────────────────┬────────────────────────────────────┘
+                     │ HTTP/REST
+                     │
+┌────────────────────▼────────────────────────────────────┐
+│               SERVER (Express.js)                       │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ Authentication Routes & Middleware               │   │
+│  │ - User Registration & Login                      │   │
+│  │ - JWT Token Verification                         │   │
+│  └──────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ AI & Career Recommendation Engine                │   │
+│  │ - LangChain Integration                          │   │
+│  │ - Google Gemini API Integration                  │   │
+│  │ - Career Prompt Engineering                      │   │
+│  └──────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │ Database Layer (MongoDB)                         │   │
+│  │ - User Profiles                                  │   │
+│  │ - RIASEC Scores & Preferences                    │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
 ```
 
-Optional frontend env in `client/.env`:
+## 📦 Tech Stack
 
-```env
-VITE_API_BASE_URL=http://localhost:8000
-```
+### Frontend
+- **React 19.2.4** - UI Library
+- **Vite 8.0.1** - Build tool and dev server
+- **Tailwind CSS 4.2.2** - Utility-first CSS framework
+- **React Router DOM 7.14.0** - Client-side routing
+- **JavaScript (ES6+)** - Programming language
 
-If `VITE_API_BASE_URL` is not set, frontend uses same-origin/proxy behavior.
+### Backend
+- **Node.js** - Runtime environment
+- **Express.js 5.2.1** - Web framework
+- **MongoDB 9.3.3** - NoSQL database
+- **Mongoose 9.3.3** - ODM for MongoDB
+- **JWT (jsonwebtoken 9.0.3)** - Authentication
+- **Bcrypt 6.0.0** - Password hashing
 
-## Install
+### AI & ML
+- **LangChain** - Framework for developing AI applications
+  - `@langchain/core` - Core functionality
+  - `@langchain/google-genai` - Google GenAI integration
+- **Google Gemini API** - Generative AI model for career recommendations
 
-```bash
-cd client
-npm install
+## 🔐 Authentication Flow
 
-cd ../server
-npm install
-```
+1. **Signup**: User registers with email, password, name, and class level
+2. **Login**: User authenticates with email and password
+3. **JWT Token**: Backend generates JWT token valid for 24 hours
+4. **Protected Routes**: Token required in Authorization header (`Bearer <token>`)
+5. **Logout**: Token invalidated on logout
 
-## Run
+## 🧠 RIASEC Assessment Model
 
-Start backend:
+The application uses Holland's RIASEC personality framework with 6 dimensions:
 
-```bash
-cd server
-npm run dev
-```
+- **R (Realistic)**: Practical, hands-on, mechanical orientation
+- **I (Investigative)**: Analytical, research-focused, scientific
+- **A (Artistic)**: Creative, expressive, aesthetic orientation
+- **S (Social)**: People-oriented, supportive, caring
+- **E (Enterprising)**: Leadership, persuasion, achievement-focused
+- **C (Conventional)**: Detail-oriented, organized, structured
 
-Start frontend (new terminal):
+## 🤖 AI Integration
 
-```bash
-cd client
-npm run dev
-```
+The application uses **LangChain** with **Google's Gemini API** to:
+- Process RIASEC quiz results
+- Analyze user personality profiles
+- Generate personalized career recommendations
+- Provide context-aware career guidance
 
-## Build frontend
-
-```bash
-cd client
-npm run build
-```
-
-## Notes
-
-- Always run commands from the correct folder (`client` or `server`).
-- Backend runs on `http://localhost:8000` by default.
+Career recommendations are generated by:
+1. Converting quiz results to RIASEC scores
+2. Sending scores to Gemini through LangChain prompts
+3. Parsing and returning structured career suggestions
